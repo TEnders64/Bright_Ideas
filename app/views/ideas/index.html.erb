@@ -1,0 +1,54 @@
+<div class="row">
+	<div class="pull-right">
+		<a href="/logout"><button class="btn btn-danger">Logout</button></a>
+	</div>
+	<h1>Hi <%= @user.alias %></h1>
+	<div class="col-lg-8">
+		<div class="row">
+			<div class="col-lg-12">
+				<p class="text-danger"><%= flash[:errors] %></p>
+				<form class="form-inline" action="/ideas" method="post">
+					<input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>"/>
+					<div class="form-group">
+						<label for="content" class="sr-only">Idea</label>
+						<input class="form-control" id="content" type="text" name="idea[content]" placeholder="Post something witty here..." />
+					</div>
+					<button class="btn btn-success" type="submit">Idea!</button>
+				</form>
+			</div>
+		</div>
+		<% @ideas.each do |i| %>
+		<div class="row">
+			<div class="col-lg-2">
+				<h5><a href="/users/<%= i.user.id %>"><%= i.user.alias %></a> says: </h5>
+			</div>
+			<div class="col-lg-10 panel panel-default">
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-lg-10">
+							<p><%= i.content %></p>
+							<a href="/bright_ideas/<%= i.id %>"><%= i.liking_users.count %> people</a> like this </span>
+						</div>
+						<% if @user.id == i.user.id %>
+						<div class="col-lg-2">
+							<form class="form-inline" action="/ideas/<%= i.id %>" method="post">
+								<input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>" />
+								<input type="hidden" name="_method" value="delete" />
+								<button type="submit" class="btn btn-sm btn-danger">Delete</button>
+							</form>
+						</div>
+						<% end %>
+						<% if !i.liking_users.include? @user %>
+						<form class="form-inline" action="/likes" method="post">
+							<input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>" />
+							<input type="hidden" name="like[idea_id]" value="<%= i.id %>" />
+							<button type="submit" class="btn btn-sm btn-primary">Like</button>
+						</form>
+						<% end %>
+					</div>
+				</div>
+			</div>
+		</div>
+		<% end %>
+	</div>
+</div>
